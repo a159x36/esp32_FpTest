@@ -1,1 +1,1 @@
- ~/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-objdump -d ./.pio/build/tdisplay/src/main.o
+ ~/.platformio/packages/toolchain-xtensa32/bin/xtensa-esp32-elf-objdump -d ./.pio/build/tdisplay/src/main.c.o

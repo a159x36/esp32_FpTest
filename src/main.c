@@ -4,23 +4,23 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-static double tv[8];
+static int tv[6];
 const int N = 3200000;
 
+ 
 #define TEST(type,name,ops) void IRAM_ATTR name (void) {\
-    type f0 = tv[0],f1 = tv[1],f2 = tv[2],f3 = tv[3];\
-    type f4 = tv[4],f5 = tv[5],f6 = tv[6],f7 = tv[7];\
-    for (int j = 0; j < N/16; j++) {\
+    type f0 = (type)tv[0],f1 = (type)tv[1],f2 = tv[2],f3 = tv[3];\
+    type f4 = tv[4],f5 = tv[5]; \
+    for (int j = (N/12); j > 0; j--) {\
         ops \
     }\
     tv[0] = f0;tv[1] = f1;tv[2] = f2;tv[3] = f3;\
-    tv[4] = f4;tv[5] = f5;tv[6] = f6;tv[7] = f7;\
+    tv[4] = f4;tv[5] = f5;\
     }
     
 #define fops(op1,op2) f0 op1##=f1 op2 f2;f1 op1##=f2 op2 f3;\
     f2 op1##=f3 op2 f4;f3 op1##=f4 op2 f5;\
-    f4 op1##=f5 op2 f6;f5 op1##=f6 op2 f7;\
-    f6 op1##=f7 op2 f0;f7 op1##=f0 op2 f1;
+    f4 op1##=f5 op2 f0;f5 op1##=f0 op2 f1;
 
 #define addops fops(,+) fops(,+)
 #define divops fops(,/) fops(,/)
@@ -42,7 +42,7 @@ TEST(double,muladddouble,muladdops)
 
 void timeit(char *name,void fn(void)) {
     vTaskDelay(1);
-    tv[0]=tv[1]=tv[2]=tv[3]=tv[4]=tv[5]=tv[6]=tv[7]=1;
+    tv[0]=tv[1]=tv[2]=tv[3]=tv[4]=tv[5]=1;
     // get time since boot in microseconds
     uint64_t time=esp_timer_get_time();
     unsigned ccount,icount,ccount_new;
@@ -58,18 +58,20 @@ void timeit(char *name,void fn(void)) {
 }
 
 void app_main() {
-    timeit("Integer Addition",addint);
-    timeit("Integer Multiply",mulint);
-    timeit("Integer Division",divint);
-    timeit("Integer Multiply-Add",muladdint);
+    while(1) {
+        timeit("Integer Addition",addint);
+        timeit("Integer Multiply",mulint);
+        timeit("Integer Division",divint);
+        timeit("Integer Multiply-Add",muladdint);
 
-    timeit("Float Addition ", addfloat);
-    timeit("Float Multiply ", mulfloat);
-    timeit("Float Division ", divfloat);
-    timeit("Float Multiply-Add", muladdfloat);
+        timeit("Float Addition ", addfloat);
+        timeit("Float Multiply ", mulfloat);
+        timeit("Float Division ", divfloat);
+        timeit("Float Multiply-Add", muladdfloat);
 
-    timeit("Double Addition", adddouble);
-    timeit("Double Multiply", muldouble);
-    timeit("Double Division", divdouble);
-    timeit("Double Multiply-Add", muladddouble);
+        timeit("Double Addition", adddouble);
+        timeit("Double Multiply", muldouble);
+        timeit("Double Division", divdouble);
+        timeit("Double Multiply-Add", muladddouble);
+    }
 }
