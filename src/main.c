@@ -67,9 +67,8 @@ void timeit(char *name,void fn(void)) {
     snprintf(str,64,"CPI:%.2f",cpi);
     print_xy(str,37*5,LASTY);
     printf ("%22s %.2f MOP/S CPI=%.2f\n",name, (float)N/time,cpi);
-    
 }
-extern int antialias;
+
 void app_main() {
     // initialise graphics and lcd display
     graphics_init();
